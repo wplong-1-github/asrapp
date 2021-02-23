@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body {
+  font-family: Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+form.example input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+form.example button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: #2196F3;
+  color: white;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-left: none;
+  cursor: pointer;
+}
+
+form.example button:hover {
+  background: #0b7dda;
+}
+
+form.example::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+</style>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.0.2"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body>
+
+<h2>A Stock Rating APP (beta)</h2>
+
+<p>&emsp; Input the stock symbol to search:</p>
+<form class="example" style="margin:auto;max-width:400px" method="POST">
+  <input type="text" placeholder="Search.." name="search">
+  <button type="submit"><i class="fa fa-search"></i></button>
+</form>
+
+<form class="example" style="margin:auto;max-width:400px">
+  <!-- <p>&nbsp </p> -->
+  <p>&emsp; {{ input_text }}</p>
+  <p>&emsp; {{ rating_text }}</p>
+  <!-- <p></p> -->
+</form>
+
+<form class="example" style="margin:auto;max-width:400px" method="GET">
+  <div id='vis1'></div>
+  <script>
+    var spec1 = {{json1 |  safe}};
+    vegaEmbed("#vis1", spec1);
+  </script>
+</form>
+
+<!-- <form class="example" style="margin:auto;max-width:100px"> -->
+<!--   <p>{{ rating_text }}</p> -->
+<!-- </form> -->
+
+</body>
+</html> 
+
+
+
+
+
+
+<!-- <head> -->
+<!--   <title>Hello from Flask</title> -->
+<!--   {% if name %} -->
+<!--   <h1>Hello {{ name }}!</h1> -->
+<!--   {% else %} -->
+<!--   <h1>Hello, World!</h1> -->
+<!--   {% endif %} -->
+<!--   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script> -->
+<!--   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.0.2"></script> -->
+<!--   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script> -->
+<!-- </head> -->
+
+<!-- <body> -->
+
+<!--   <form method="POST"> -->
+<!--     <input name="text"> -->
+<!--     <input type="submit"> -->
+<!--   </form> -->
+
+<!--   <\!-- <form method="GET"> -\-> -->
+<!--   <\!--   <p>  -\-> -->
+<!--   <\!--     {{ input_text }} -\-> -->
+<!--   <\!--   </p> -\-> -->
+<!--   <\!-- </form> -\-> -->
+
+<!--   <form method="GET"> -->
+<!--     <p>{{ input_text }}</p> -->
+
+<!--     <div id='vis1'></div> -->
+<!--     <script> -->
+<!--       var spec1 = {{json1 |  safe}}; -->
+<!--       vegaEmbed("#vis1", spec1); -->
+<!--     </script> -->
+    
+<!--     <p>{{ rating_text }}</p> -->
+
+<!--   </form> -->
+
+
+<!-- </body> -->
+
+<!-- </html> -->
