@@ -115,7 +115,10 @@ def get_company_str(company_symbol):
     # print(df_row)
     # print(df['Symbol'] == company_symbol)
 
-    if df['Symbol'].str.contains(company_symbol).any():
+
+    # if df['Symbol'].str.contains(company_symbol).any():
+    # use list here as the above statement will let part of the string pass as well, like "AM", rather than AMD
+    if company_symbol in df['Symbol'].tolist():
         print('passed 1st if')
         # df = df.loc[df['Symbol'] == company_symbol]
         lk_bool = pd.isnull(df.loc[df.Symbol == company_symbol, 'LK']).bool()
@@ -191,6 +194,9 @@ def make_prediction(lk_month_df, fb_month_df, st_month_df):
     lr = LinearRegression()  # make an instance of the model 
     lr.fit(X, y)             # fit the model
 
+    
+    # get X_pred from historical data
+    
     y_pred = lr.predict(X)
     print (y_pred)
     print (type(y_pred))
