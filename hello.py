@@ -42,7 +42,7 @@ def make_plot():
     
     x = [1,2,3,4,5,6,7,8,9,10,11,12]
     # y = make_prediction(processed_text)
-    y = get_company_prediction(processed_text)
+    y, rating = get_company_prediction(processed_text)
     # [63.185500,64.134474,64.753913,66.238947,68.828182,70.561364,71.843250,72.715652,74.365500,77.889091,83.645238,84.836000]
 
     if not y:
@@ -65,4 +65,4 @@ def make_plot():
 
         json = chart.to_json()
 
-        return render_template('hello.html', json1=json, input_text=('Symbol: ' + processed_text), rating_text=('Rating: ' + 'Increasing') )
+        return render_template('hello.html', json1=json, input_text=('Symbol: ' + processed_text), rating_text=('Rating: ' + rating ) )

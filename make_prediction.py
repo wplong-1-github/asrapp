@@ -16,10 +16,12 @@ def clean_currency(x):
     return(x)
 
 
-def select_LinkedIn_data(lk_df, company_str):
+def select_LinkedIn_data(lk_df, company_str, year):
+    # year for train = 2016
+    # year for tain = 2017
     print(lk_df,company_str)
-    st = datetime.datetime(2015, 12, 31, tzinfo=datetime.timezone.utc)
-    ed = datetime.datetime(2017, 1, 1, tzinfo=datetime.timezone.utc)
+    st = datetime.datetime(year-1, 12, 31, tzinfo=datetime.timezone.utc)
+    ed = datetime.datetime(year+1, 1, 1, tzinfo=datetime.timezone.utc)
 
     lk_dt_df = lk_df.loc[(lk_df['company_name'] == company_str)
                          & (lk_df['as_of_date'] > st)
@@ -46,9 +48,9 @@ def select_LinkedIn_data(lk_df, company_str):
 #     return 
 
 
-def select_FB_data(fb_df, company_str):
-    start = datetime.datetime(2015, 12, 31, tzinfo=datetime.timezone.utc)
-    end = datetime.datetime(2017, 1, 1, tzinfo=datetime.timezone.utc)
+def select_FB_data(fb_df, company_str, year):
+    start = datetime.datetime(year-1, 12, 31, tzinfo=datetime.timezone.utc)
+    end = datetime.datetime(year+1, 1, 1, tzinfo=datetime.timezone.utc)
 
     fb_dt_df = fb_df.loc[(fb_df['username'] == company_str)
                          & (fb_df['time'] > start)
@@ -152,7 +154,7 @@ def data_for_prediction(stock_company_symbol, fb_company_str, lk_company_str):
     # convert date to UTC
     lk_df['as_of_date']= pd.to_datetime(lk_df['as_of_date'], utc = True)
 
-    lk_month_df = select_LinkedIn_data(lk_df, lk_company_str)
+    lk_month_df = select_LinkedIn_data(lk_df, lk_company_str, 2016)
     print (type(lk_month_df))
     print (lk_month_df)
 
@@ -163,7 +165,7 @@ def data_for_prediction(stock_company_symbol, fb_company_str, lk_company_str):
     fb_df = pd.read_csv(facebook_dir)
     # convert date to UTC
     fb_df['time']= pd.to_datetime(fb_df['time'], utc = True)
-    fb_month_df = select_FB_data(fb_df, fb_company_str)
+    fb_month_df = select_FB_data(fb_df, fb_company_str, 2016)
     print(type(fb_month_df))
     print(fb_month_df)
 
@@ -182,11 +184,40 @@ def data_for_prediction(stock_company_symbol, fb_company_str, lk_company_str):
     return lk_month_df, fb_month_df, st_month_df
 
 
-def make_prediction(lk_month_df, fb_month_df, st_month_df):
+
+def data_next_for_prediction(fb_company_str, lk_company_str):
+    print(fb_company_str, lk_company_str)
+
+    linkedin_dir = './datalab/datalab_linkedin_cleaned_more.csv'
+    lk_df = pd.read_csv(linkedin_dir)
+    # convert date to UTC
+    lk_df['as_of_date']= pd.to_datetime(lk_df['as_of_date'], utc = True)
+
+    lk_month_df = select_LinkedIn_data(lk_df, lk_company_str, 2017)
+    print (type(lk_month_df))
+    print (lk_month_df)
+
+    # make_LinkedIn_Plot(lk_month_df[1:-1])
+    
+    print('----------------------------------------')
+    facebook_dir = './datalab/datalab_facebook_cleaned_more.csv'
+    fb_df = pd.read_csv(facebook_dir)
+    # convert date to UTC
+    fb_df['time']= pd.to_datetime(fb_df['time'], utc = True)
+    fb_month_df = select_FB_data(fb_df, fb_company_str, 2017)
+    print(type(fb_month_df))
+    print(fb_month_df)
+
+    # print(st_month_df['timestamp'])
+    # print(st_month_df['open'])
+
+    return lk_month_df, fb_month_df
+
+
+def make_prediction(lk_month_df, fb_month_df, st_month_df, lk_month_df_next, fb_month_df_next):
     # print(lk_month_df.to_frame().info())
     # print(lk_month_df.to_frame())
-    x_merged = lk_month_df.to_frame().join(fb_month_df.to_frame())
-    # print (x_merged)
+    x_merged = lk_month_df.to_frame().join(fb_month_df.to_frame())    # print (x_merged)
     X = x_merged
     print (X)
     y = st_month_df
@@ -194,15 +225,32 @@ def make_prediction(lk_month_df, fb_month_df, st_month_df):
     lr = LinearRegression()  # make an instance of the model 
     lr.fit(X, y)             # fit the model
 
+    # get X_next from historical data
+    x_next_merged = lk_month_df_next.to_frame().join(fb_month_df_next.to_frame())
+    X_next = x_next_merged
+    print (X_next)
     
-    # get X_pred from historical data
-    
-    y_pred = lr.predict(X)
+    # feed to make prediction for next year
+    y_pred = lr.predict(X_next)
     print (y_pred)
     print (type(y_pred))
     print (lr.coef_)
 
-    return y_pred.tolist()
+    # fit y_pred to get ratings
+    month_list = np.array([1,2,3,4,5,6,7,8,9,10,11,12])
+    slope, intercept = np.polyfit(month_list, y_pred, 1)
+    print(slope)
+    
+    rating = None
+
+    if slope < -0.1:
+        rating = "Decreasing"
+    elif slope > 0.1: 
+        rating = "Increasing"
+    else:
+        rating = "Remaining same"
+
+    return y_pred.tolist(), rating 
     
     # plt.plot(X, y, 'o', color = 'k', label='training data')
     # plt.plot(X, y_pred, color='#42a5f5ff', label='model prediction')
@@ -214,15 +262,23 @@ def make_prediction(lk_month_df, fb_month_df, st_month_df):
 def get_company_prediction(company_symbol):
     lk,fb = get_company_str(company_symbol)
     if lk and fb:
+        # get data for train
         lk_month_df, fb_month_df, st_month_df = data_for_prediction(company_symbol, fb, lk)
         if lk_month_df.shape[0] == fb_month_df.shape[0] == st_month_df.shape[0]:
-            y_pred = make_prediction(lk_month_df, fb_month_df, st_month_df)
-            return y_pred
+            # get data_next for prediction
+            lk_month_df_next, fb_month_df_next = data_next_for_prediction(fb, lk)
+            # check if data_next has error when using for prediction
+            if lk_month_df_next.shape[0] == fb_month_df_next.shape[0]:
+                y_pred, rating = make_prediction(lk_month_df, fb_month_df, st_month_df, lk_month_df_next, fb_month_df_next)
+                return y_pred, rating
+            else:
+                return [], None
+
         else:
-            return []
+            return [], None
 
     else:
-        return []
+        return [], None
 
 def main():
     # symbol = input('input something!: ')
