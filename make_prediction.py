@@ -94,6 +94,7 @@ def select_stock_data(st_df):
     return st_dt_df.groupby(st_dt_df['timestamp'].dt.strftime('%m'))['open'].mean().sort_index()
 
 
+### a scatter plot can be made when debugging
 def make_stock_plot(st_df):
     st = datetime.datetime(2016, 12, 31, tzinfo=datetime.timezone.utc)
     ed = datetime.datetime(2018, 1, 1, tzinfo=datetime.timezone.utc)
@@ -174,6 +175,7 @@ def data_for_prediction(stock_company_symbol, fb_company_str, lk_company_str):
     st_df = pd.read_csv(stock_dir)
     st_df['timestamp']= pd.to_datetime(st_df['timestamp'], utc = True)
     st_df['open'] = st_df['open'].apply(clean_currency).astype('float')
+    ### when debugging the algorithm, uncomment the following line
     # make_stock_plot(st_df)
     st_month_df = select_stock_data(st_df)
     print(st_month_df)
