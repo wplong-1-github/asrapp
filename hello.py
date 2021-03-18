@@ -46,7 +46,7 @@ def make_plot():
     try:
         result = get_company_prediction(processed_text)
         if result is None:
-            return render_template('hello.html', json1=None, input_text=('Symbol: ' + processed_text), rating_text='Lack of company social media information!', rSqrt_text=('') )
+            return render_template('hello.html', json1=None, input_text=('Symbol: ' + processed_text), rating_text='Lack of company social media information!', rSq_text=('') )
         else:
             (y, rating, r2_str, year) = result
 
@@ -69,6 +69,6 @@ def make_plot():
 
             json = chart.to_json()
 
-            return render_template('hello.html', json1=json, input_text=('Symbol: ' + processed_text), rating_text=('Rating: ' + rating ), rSqrt_text=('R2_score: ' +  r2_str) )
+            return render_template('hello.html', json1=json, input_text=('Symbol: ' + processed_text), rating_text=('Rating: ' + rating ), rSq_text=('R2_score: ' +  r2_str) )
     except:
-        return render_template('hello.html', json1=None, input_text=('Symbol: ' + processed_text), rating_text='Unexpected error happened!', rSqrt_text=('') )
+        return render_template('hello.html', json1=None, input_text=('Symbol: ' + processed_text), rating_text='Unexpected error happened!', rSq_text=('') )
