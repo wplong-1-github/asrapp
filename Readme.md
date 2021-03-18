@@ -12,7 +12,7 @@ A standalone file to match a company's name across all above data sets is writte
 ## Visualizations
 When searching in the app, only a line plot made from `Altair` is returned in the spirit of simplicity. In the meantime, for the benefit of debugging, a scatter plot can be made from `matplotlib` in the back-end of the app. Both of the visulization code are implemented in `make_prediction.py`.
 
-Bad: R_square score = 0.13 | Good: R_square score = 0.85 | Good: R_square score = 0.99 |
+R_square score = 0.13      | R_square score = 0.85       | R_square score = 0.99       |
 :-------------------------:|:---------------------------:|:---------------------------:|
 ![](AMD.png)               |  ![](AMZN.png)              |  ![](MSFT.png)              |
 
